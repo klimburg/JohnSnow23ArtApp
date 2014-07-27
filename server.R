@@ -17,6 +17,7 @@ library("quantmod")
 shinyServer(function(input, output) {
       
       #KCL you use dfg in some places and finalartdata in others but never create finalartdata!!!
+      # I took this part out and moved to global.R so both ui.R and server.R can use it
 #       dfg <- read.csv("./data/dfgdata.csv", header = TRUE)
 #       finalartdata <-dfg
       ####   the rows that contain the "types" can be reformatted so it just subsets based the on type so it can react to when more data is put in 
@@ -24,18 +25,20 @@ shinyServer(function(input, output) {
       
       #KCL this is a very bad idea if you ever want to load a new data set
       datasetInput <- reactive({
+            #KCL limit based on input parameter
             data<-dfg[dfg$CAT==input$parameters,]
+            #KCL convert date to Date class so you can subset with it
             data$Date<-as.Date(data$Date,format="%m/%d/%Y",origin='1970-01-01')
-            # Filter dataframe on dates, should update when ever date
+            #KCL Filter dataframe on dates, should update when ever date changes
             dataFiltered<-data[data$Date>=input$date[1] & data$Date<=input$date[2],]
             dataFiltered
             })
       
-#       #KCL I dont understand what you are trying to do with this 
-#       variables <- reactive({
+#       #KCL I dont understand what you are trying to do with this, I just commented it out to get everything running 
+#      variables <- reactive({
 #             
 #             ###for everything but university classes
-#             Date <- finalartdata[finalartdata$Date == datasetInput, ]
+#             Date <- finalartdata[finalartdata$Date == datasetInput, ] 
 #             Head.Count <- data.frame(finalartdata[finalartdata$Head.Count == datasetInput, ],
 #                                      by(start = input$date[1], end = input$date[2]))
 #             
@@ -59,11 +62,11 @@ shinyServer(function(input, output) {
             data<-datasetInput()
                         
             pp <- ggplot(data, aes(x=Date, y=headCount,fill=CAT))+
-                  geom_bar(stat="identity")+
-#                   geom_bar(stat="identity", position="dodge") +
+                  geom_bar(stat="identity", position="dodge") +
                   geom_text(aes(label=headCount), vjust=1.5, colour="white",
                              position=position_dodge(.9), size=3)
             print(pp)
+#KCL I disabled these for now but you can see how I did the plot above
             
 #             if(input$parameters == "Type3")
 #             {

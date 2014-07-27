@@ -16,9 +16,10 @@ shinyUI(fluidPage(
                                  start = "2011-01-01", end = "2014-7-30",
                                  format = "yyyy-mm-dd"),
                   
+                  #KCL I replaced your list with the choices in the data set loaded from global.R
                   selectInput("parameters",
                               label="choose a type",
-                              choices=dfg$CAT,
+                              choices=unique(dfg$CAT),
                               selected=NULL),
                   
                   conditionalPanel(
